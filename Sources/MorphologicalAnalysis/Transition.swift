@@ -1,0 +1,721 @@
+//
+//  File.swift
+//  
+//
+//  Created by Olcay Taner YILDIZ on 10.03.2021.
+//
+
+import Foundation
+import Dictionary
+
+public class Transition{
+    
+    private var _toState : State?
+    private var _with : String?
+    private var _withName : String?
+    private var formationToCheck : String?
+    private var _toPos : String?
+    
+    /**
+     * A constructor of {@link Transition} class which takes  a {@link State}, and two {@link String}s as input. Then it
+     * initializes toState, with and withName variables with given inputs.
+        - Parameters:
+            - toState:  {@link State} input.
+            - with :    String input.
+            - withName: String input.
+     */
+    public init(toState: State?, with: String, withName: String?){
+        self._toState = toState
+        self._with = with
+        self._withName = withName
+        _toPos = nil
+    }
+    
+    /**
+     * Another constructor of {@link Transition} class which takes  a {@link State}, and three {@link String}s as input. Then it
+     * initializes toState, with, withName and toPos variables with given inputs.
+        - Parameters:
+            - toState:  {@link State} input.
+            - with:     String input.
+            - withName: String input.
+            - toPos:    String input.
+     */
+    public init(toState: State, with: String, withName: String?, toPos: String){
+        self._toState = toState
+        self._with = with
+        self._withName = withName
+        self._toPos = toPos
+    }
+    
+    /**
+     * Another constructor of {@link Transition} class which only takes a {@link String}s as an input. Then it
+     * initializes toState, withName and toPos variables as null and with variable with the given input.
+        - Parameters:
+            - with: String input.
+     */
+    public init(with: String){
+        _toState = nil
+        _withName = nil
+        _toPos = nil
+        self._with = with
+    }
+    
+    /**
+     * Getter for the toState variable.
+        - Returns: toState variable.
+     */
+    public func toState() -> State?{
+        return _toState
+    }
+    
+    /**
+     * Getter for the toPos variable.
+        - Returns: toPos variable.
+     */
+    public func toPos() -> String?{
+        return _toPos
+    }
+    
+    /**
+     * The transitionPossible method takes two {@link String} as inputs; currentSurfaceForm and realSurfaceForm. If the
+     * length of the given currentSurfaceForm is greater than the given realSurfaceForm, it directly returns true. If not,
+     * it takes a substring from given realSurfaceForm with the size of currentSurfaceForm. Then checks for the characters of
+     * with variable.
+     * <p>
+     * If the character of with that makes transition is C, it returns true if the substring contains c or ç.
+     * If the character of with that makes transition is D, it returns true if the substring contains d or t.
+     * If the character of with that makes transition is A, it returns true if the substring contains a or e.
+     * If the character of with that makes transition is K, it returns true if the substring contains k, g or ğ.
+     * If the character of with that makes transition is other than the ones above, it returns true if the substring
+     * contains the same character as with.
+        - Parameters:
+            - currentSurfaceForm: {@link String} input.
+            - realSurfaceForm:    {@link String} input.
+        - Returns: True when the transition is possible according to Turkish grammar, false otherwise.
+     */
+    public func transitionPossible(currentSurfaceForm: String, realSurfaceForm: String) -> Bool{
+        if currentSurfaceForm.count == 0 || currentSurfaceForm.count >= realSurfaceForm.count {
+            return true
+        }
+        let searchString : String = String(realSurfaceForm.suffix(realSurfaceForm.count - currentSurfaceForm.count))
+        for i in 0..<_with!.count {
+            switch Word.charAt(s: _with!, i: i) {
+                case "C":
+                    return searchString.contains("c") || searchString.contains("ç")
+                case "D":
+                    return searchString.contains("d") || searchString.contains("t")
+                case "c", "e", "r", "p", "l", "b", "g", "o", "m", "v", "i", "ü", "z":
+                    return searchString.contains(Word.charAt(s: _with!, i: i))
+                case "A":
+                    return searchString.contains("a") || searchString.contains("e")
+                case "k":
+                    return searchString.contains("k") || searchString.contains("g") || searchString.contains("ğ")
+                default:
+                    break;
+            }
+        }
+        return true;
+    }
+    
+    /**
+     * The transitionPossible method takes a {@link FsmParse} currentFsmParse as an input. It then checks some special cases;
+        - Parameters:
+            - currentFsmParse: Parse to be checked
+        - Returns: True if transition is possible false otherwise
+     */
+    public func transitionPossible(currentFsmParse: FsmParse) -> Bool{
+        if _with == "Ar" && currentFsmParse.getSurfaceForm().hasSuffix("l") && currentFsmParse.getWord().getName() != currentFsmParse.getSurfaceForm() {
+            return false
+        }
+        if currentFsmParse.getVerbAgreement() != nil && currentFsmParse.getPossessiveAgreement() != nil && _withName != nil {
+            if currentFsmParse.getVerbAgreement() == "A3PL" && _withName == "^DB+VERB+ZERO+PRES+A1SG" {
+                return false
+            }
+            if currentFsmParse.getVerbAgreement() == "A3SG" && (currentFsmParse.getPossessiveAgreement() == "P1SG" || currentFsmParse.getPossessiveAgreement() == "P2SG" && _withName == "^DB+VERB+ZERO+PRES+A1PL") {
+                return false
+            }
+        }
+        return true
+    }
+    
+    public func transitionPossible(root: TxtWord, fromState: State) -> Bool{
+        if root.isAdjective() && ((root.isNominal() && !root.isExceptional()) || root.isPronoun()) && _toState!.getName() == "NominalRoot(ADJ)" && _with == "0" {
+            return false
+        }
+        if root.isAdjective() && root.isNominal() && _with == "^DB+VERB+ZERO+PRES+A3PL" && fromState.getName() == "AdjectiveRoot" {
+            return false;
+        }
+        if root.isAdjective() && root.isNominal() && _with == "SH" && fromState.getName() == "AdjectiveRoot" {
+            return false
+        }
+        if _with == "ki" {
+            return root.takesRelativeSuffixKi()
+        }
+        if _with == "kü" {
+            return root.takesRelativeSuffixKu()
+        }
+        if _with == "dHr" {
+            if _toState!.getName() == "Adverb" {
+                return true
+            } else {
+                return root.takesSuffixDIRAsFactitive()
+            }
+        }
+        if _with == "Hr" && (_toState!.getName() == "AdjectiveRoot(VERB)" || _toState!.getName() == "OtherTense" || _toState!.getName() == "OtherTense2") {
+            return root.takesSuffixIRAsAorist()
+        }
+        return true
+    }
+    
+    /**
+     * The beforeLastVowel method takes a {@link String} stem as an input. It loops through the given stem and returns
+     * the second last vowel.
+        - Parameters:
+            - stem: String input.
+        - Returns: Vowel before the last vowel.
+     */
+    private func beforeLastVowel(stem: String) -> Character{
+        var before : Int = 1
+        var last : Character = "0"
+        var i : Int = stem.count - 1
+        while i >= 0 {
+            if TurkishLanguage.isVowel(ch: Word.charAt(s: stem, i: i)) {
+                if (before == 1) {
+                    last = Word.charAt(s: stem, i: i)
+                    before -= 1
+                    i -= 1
+                    continue
+                }
+                return Word.charAt(s: stem, i: i)
+            }
+            i -= 1
+        }
+        return last
+    }
+    
+    /**
+     * The lastVowel method takes a {@link String} stem as an input. It loops through the given stem and returns
+     * the last vowel.
+        - Parameters:
+            - stem: String input.
+        - Returns: the last vowel.
+     */
+    private func lastVowel(stem: String) -> Character{
+        var i : Int = stem.count - 1
+        while i >= 0 {
+            if TurkishLanguage.isVowel(ch: Word.charAt(s: stem, i: i)) {
+                return Word.charAt(s: stem, i: i)
+            }
+            i -= 1
+        }
+        i = stem.count - 1
+        while i >= 0 {
+            if Word.charAt(s: stem, i: i) >= "0" && Word.charAt(s: stem, i: i) <= "9" {
+                return Word.charAt(s: stem, i: i)
+            }
+            i -= 1
+        }
+        return "0"
+    }
+    
+    /**
+     * The lastPhoneme method takes a {@link String} stem as an input. It then returns the last phoneme of the given stem.
+        - Parameters:
+            - stem: String input.
+        - Returns: the last phoneme.
+     */
+    private func lastPhoneme(stem: String) -> Character{
+        if stem.count == 0 {
+            return " ";
+        }
+        if Word.charAt(s: stem, i: stem.count - 1) != "'" {
+            return Word.charAt(s: stem, i: stem.count - 1)
+        } else {
+            return Word.charAt(s: stem, i: stem.count - 2)
+        }
+    }
+    
+    /**
+     * The withFirstChar method returns the first character of the with variable.
+     *
+        - Returns: The first character of the with variable.
+     */
+    private func withFirstChar() -> Character{
+        if _with?.count == 0 {
+            return "$"
+        }
+        if Word.charAt(s: _with!, i: 0) != "'" {
+            return Word.charAt(s: _with!, i: 0)
+        } else {
+            if _with?.count == 1 {
+                return Word.charAt(s: _with!, i: 0)
+            } else {
+                return Word.charAt(s: _with!, i: 1)
+            }
+        }
+    }
+    
+    /**
+     * The startWithVowelorConsonantDrops method checks for some cases. If the first character of with variable is "nsy",
+     * and with variable does not equal to one of the Strings; "ylA, ysA, ymHs, yDH, yken", it returns true. If
+     * <p>
+     * Or, if the first character of with variable is 'A, H: or any other vowels, it returns true.
+     *
+        - Returns: True if it starts with vowel or consonant drops, false otherwise.
+     */
+    private func startWithVowelorConsonantDrops() -> Bool{
+        if TurkishLanguage.isConsonantDrop(ch: withFirstChar()) && _with != "ylA" && _with != "ysA" && _with != "ymHs" && _with != "yDH" && _with != "yken" {
+            return true
+        }
+        if withFirstChar() == "A" || withFirstChar() == "H" || TurkishLanguage.isVowel(ch: withFirstChar()) {
+            return true
+        }
+        return false
+    }
+    
+    /**
+     * The softenDuringSuffixation method takes a {@link TxtWord} root as an input. It checks two cases; first case returns
+     * true if the given root is nominal or adjective and has one of the flags "IS_SD, IS_B_SD, IS_SDD" and with variable
+     * equals o one of the Strings "Hm, nDAn, ncA, nDA, yA, yHm, yHz, yH, nH, nA, nHn, H, sH, Hn, HnHz, HmHz".
+     * <p>
+     * And the second case returns true if the given root is verb and has the "F_SD" flag, also with variable starts with
+     * "Hyor" or equals one of the Strings "yHs, yAn, yA, yAcAk, yAsH, yHncA, yHp, yAlH, yArAk, yAdur, yHver, yAgel, yAgor,
+     * yAbil, yAyaz, yAkal, yAkoy, yAmA, yHcH, HCH, Hr, Hs, Hn, yHn", yHnHz, Ar, Hl").
+        - Parameters:
+            - root {@link TxtWord} input.
+        - Returns: true if there is softening during suffixation of the given root, false otherwise.
+     */
+    public func softenDuringSuffixation(root: TxtWord) -> Bool{
+        if (root.isNominal() || root.isAdjective()) && root.nounSoftenDuringSuffixation() && (_with == "Hm" || _with == "nDAn" || _with == "ncA" || _with == "nDA" || _with == "yA" || _with == "yHm" || _with == "yHz" || _with == "yH" || _with == "nH" || _with == "nA" || _with == "nHn" || _with == "H" || _with == "sH" || _with == "Hn" || _with == "HnHz" || _with == "HmHz") {
+            return true
+        }
+        if root.isVerb() && root.verbSoftenDuringSuffixation() && (_with!.hasPrefix("Hyor") || _with == "yHs" || _with == "yAn" || _with == "yA" || _with!.hasPrefix("yAcAk") || _with == "yAsH" || _with == "yHncA" || _with == "yHp" || _with == "yAlH" || _with == "yArAk" || _with == "yAdur" || _with == "yHver" || _with == "yAgel" || _with == "yAgor" || _with == "yAbil" || _with == "yAyaz" || _with == "yAkal" || _with == "yAkoy" || _with == "yAmA" || _with == "yHcH" || _with == "HCH" || _with!.hasPrefix("Hr") || _with == "Hs" || _with == "Hn" || _with == "yHn" || _with == "yHnHz" || _with!.hasPrefix("Ar") || _with == "Hl") {
+            return true
+        }
+        return false
+    }
+    
+    /**
+     * The makeTransition method takes a {@link TxtWord} root and s {@link String} stem as inputs. If given root is a verb,
+     * it makes transition with given root and stem with the verbal root state. If given root is not verb, it makes transition
+     * with given root and stem and the nominal root state.
+        - Parameters:
+            - root: {@link TxtWord} input.
+            - stem: String input.
+        - Returns: String type output that has the transition.
+     */
+    public func makeTransition(root: TxtWord, stem: String) -> String{
+        if (root.isVerb()) {
+            return makeTransition(root: root, stem: stem, startState: State(name: "VerbalRoot", startState: true, endState: false))
+        } else {
+            return makeTransition(root: root, stem: stem, startState: State(name: "NominalRoot", startState: true, endState: false))
+        }
+    }
+    
+    public func makeTransition(root: TxtWord, stem: String, startState: State) -> String{
+        let rootWord : Bool = root.getName() == stem || (root.getName() + "'") == stem
+        var formation : String = stem
+        var i : Int = 0
+        if _with == "0" {
+            return stem
+        }
+        if (stem == "bu" || stem == "şu" || stem == "o") && rootWord && _with == "ylA" {
+            return stem + "nunla"
+        }
+        if _with == "yA" {
+            if stem == "ben" {
+                return "bana"
+            }
+        }
+        formationToCheck = stem
+        //---vowelEChangesToIDuringYSuffixation---
+        //de->d(i)yor, ye->y(i)yor
+        if rootWord && withFirstChar() == "y" && root.vowelEChangesToIDuringYSuffixation() && Word.charAt(s: _with!, i: 1) != "H" {
+            formation = stem.prefix(stem.count - 1) + "i"
+            formationToCheck = formation
+        } else {
+            //---lastIdropsDuringPassiveSuffixation---
+            // yoğur->yoğrul, ayır->ayrıl, buyur->buyrul, çağır->çağrıl, çevir->çevril, devir->devril,
+            // kavur->kavrul, kayır->kayrıl, kıvır->kıvrıl, savur->savrul, sıyır->sıyrıl, yoğur->yoğrul
+            if rootWord && (_with == "Hl" || _with == "Hn") && root.lastIdropsDuringPassiveSuffixation() {
+                formation = stem.prefix(stem.count - 2) + String(Word.charAt(s: stem, i: stem.count - 1))
+                formationToCheck = stem
+            } else {
+                //---showsSuRegularities---
+                //karasu->karasuyu, su->suyu, ağırsu->ağırsuyu, akarsu->akarsuyu, bengisu->bengisuyu
+                if rootWord && root.showsSuRegularities() && startWithVowelorConsonantDrops() && !_with!.hasPrefix("y") {
+                    formation = stem + "y"
+                    formationToCheck = formation
+                } else {
+                    if rootWord && root.duplicatesDuringSuffixation() && TurkishLanguage.isConsonantDrop(ch: Word.charAt(s: _with!, i: 0)) {
+                        //---duplicatesDuringSuffixation---
+                        if softenDuringSuffixation(root: root) {
+                            //--extra softenDuringSuffixation
+                            switch (lastPhoneme(stem: stem)) {
+                                case "p":
+                                    //tıp->tıbbı
+                                    formation = stem.prefix(stem.count - 1) + "bb"
+                                    break;
+                                case "t":
+                                    //cet->ceddi, met->meddi, ret->reddi, serhat->serhaddi, zıt->zıddı, şet->şeddi
+                                    formation = stem.prefix(stem.count - 1) + "dd"
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            //cer->cerri, emrihak->emrihakkı, fek->fekki, fen->fenni, had->haddi, hat->hattı,
+                            // haz->hazzı, his->hissi
+                            formation = stem + String(Word.charAt(s: stem, i: stem.count - 1))
+                        }
+                        formationToCheck = formation
+                    } else {
+                        if rootWord && root.lastIdropsDuringSuffixation() && !startState.getName().hasPrefix("VerbalRoot") && !startState.getName().hasPrefix("ProperRoot") && startWithVowelorConsonantDrops() {
+                            //---lastIdropsDuringSuffixation---
+                            if softenDuringSuffixation(root: root) {
+                                //---softenDuringSuffixation---
+                                switch (lastPhoneme(stem: stem)) {
+                                    case "p":
+                                        //hizip->hizbi, kayıp->kaybı, kayıt->kaydı, kutup->kutbu
+                                        formation = stem.prefix(stem.count - 2) + "b"
+                                        break
+                                    case "t":
+                                        //akit->akdi, ahit->ahdi, lahit->lahdi, nakit->nakdi, vecit->vecdi
+                                        formation = stem.prefix(stem.count - 2) + "d"
+                                        break
+                                    case "ç":
+                                        //eviç->evci, nesiç->nesci
+                                        formation = stem.prefix(stem.count - 2) + "c"
+                                        break
+                                    default:
+                                        break
+                                }
+                            } else {
+                                //sarıağız->sarıağzı, zehir->zehri, zikir->zikri, nutuk->nutku, omuz->omzu, ömür->ömrü
+                                //lütuf->lütfu, metin->metni, kavim->kavmi, kasıt->kastı
+                                formation = stem.prefix(stem.count - 2) + String(Word.charAt(s: stem, i: (stem.count - 1)))
+                            }
+                            formationToCheck = stem
+                        } else {
+                            switch (lastPhoneme(stem: stem)) {
+                                //---nounSoftenDuringSuffixation or verbSoftenDuringSuffixation
+                                case "p":
+                                    //adap->adabı, amip->amibi, azap->azabı, gazap->gazabı
+                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                        formation = stem.prefix(stem.count - 1) + "b"
+                                    }
+                                    break;
+                                case "t":
+                                    //adet->adedi, akort->akordu, armut->armudu
+                                    //affet->affedi, yoket->yokedi, sabret->sabredi, rakset->raksedi
+                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                        formation = stem.prefix(stem.count - 1) + "d"
+                                    }
+                                    break;
+                                case "ç":
+                                    //ağaç->ağacı, almaç->almacı, akaç->akacı, avuç->avucu
+                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                        formation = stem.prefix(stem.count - 1) + "c"
+                                    }
+                                    break;
+                                case "g":
+                                    //arkeolog->arkeoloğu, filolog->filoloğu, minerolog->mineroloğu
+                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                        formation = stem.prefix(stem.count - 1) + "ğ"
+                                    }
+                                    break;
+                                case "k":
+                                    //ahenk->ahengi, künk->küngü, renk->rengi, pelesenk->pelesengi
+                                    if startWithVowelorConsonantDrops() && rootWord && root.endingKChangesIntoG() && (!root.isProperNoun() || startState.description() != "ProperRoot") {
+                                        formation = stem.prefix(stem.count - 1) + "g"
+                                    } else {
+                                        //ablak->ablağı, küllük->küllüğü, kitaplık->kitaplığı, evcilik->evciliği
+                                        if startWithVowelorConsonantDrops() && (!rootWord || (softenDuringSuffixation(root: root) && (!root.isProperNoun() || startState.description() != "ProperRoot"))) {
+                                            formation = stem.prefix(stem.count - 1) + "ğ"
+                                        }
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                            formationToCheck = formation
+                        }
+                    }
+                }
+            }
+        }
+        if TurkishLanguage.isConsonantDrop(ch: withFirstChar()) && !TurkishLanguage.isVowel(ch: Word.charAt(s: stem, i: stem.count - 1)) && (root.isNumeral() || root.isReal() || root.isFraction() || root.isTime() || root.isDate() || root.isPercent() || root.isRange()) && (root.getName().hasSuffix("1") || root.getName().hasSuffix("3") || root.getName().hasSuffix("4") || root.getName().hasSuffix("5") || root.getName().hasSuffix("8") || root.getName().hasSuffix("9") || root.getName().hasSuffix("10") || root.getName().hasSuffix("30") || root.getName().hasSuffix("40") || root.getName().hasSuffix("60") || root.getName().hasSuffix("70") || root.getName().hasSuffix("80") || root.getName().hasSuffix("90") || root.getName().hasSuffix("00")) {
+            if Word.charAt(s: _with!, i: 0) == "'" {
+                formation = formation + "'"
+                i = 2
+            } else {
+                i = 1
+            }
+        } else {
+            if ((TurkishLanguage.isConsonantDrop(ch: withFirstChar()) && TurkishLanguage.isConsonant(ch: lastPhoneme(stem: stem))) || (rootWord && root.consonantSMayInsertedDuringPossesiveSuffixation())) {
+                if Word.charAt(s: _with!, i: 0) == "'" {
+                    formation = formation + "'"
+                    if root.isAbbreviation(){
+                        i = 1;
+                    } else {
+                        i = 2
+                    }
+                } else {
+                    i = 1
+                }
+            }
+        }
+        while i < _with!.count {
+            switch Word.charAt(s: _with!, i: i) {
+                case "D":
+                    formation = resolveD(root: root, formation: formation)
+                    break;
+                case "A":
+                    formation = resolveA(root: root, formation: formation, rootWord: rootWord)
+                    break;
+                case "H":
+                    if Word.charAt(s: _with!, i: 0) != "'" {
+                        formation = resolveH(root: root, formation: formation, beginningOfSuffix: i == 0, specialCaseTenseSuffix: (_with?.hasPrefix("Hyor"))!, rootWord: rootWord)
+                    } else {
+                        formation = resolveH(root: root, formation: formation, beginningOfSuffix: i == 1, specialCaseTenseSuffix: false, rootWord: rootWord)
+                    }
+                    break;
+                case "C":
+                    formation = resolveC(formation: formation)
+                    break;
+                case "S":
+                    formation = resolveS(formation: formation)
+                    break;
+                case "Ş":
+                    formation = resolveSh(formation: formation)
+                    break;
+                default:
+                    if (i == _with!.count - 1 && Word.charAt(s: _with!, i: i) == "s") {
+                        formation += "ş"
+                    } else {
+                        formation += String(Word.charAt(s: _with!, i: i))
+                    }
+            }
+            formationToCheck = formation
+            i += 1
+        }
+        return formation
+    }
+    
+    private func resolveD(root: TxtWord, formation: String) -> String{
+        if root.isAbbreviation() {
+            return formation + "d"
+        }
+        if lastPhoneme(stem: formationToCheck!) >= "0" && lastPhoneme(stem: formationToCheck!) <= "9" {
+            switch lastPhoneme(stem: formationToCheck!) {
+                case "3", "4", "5":
+                    //3->3'tü, 5->5'ti, 4->4'tü
+                    return formation + "t"
+                case "0":
+                    if root.getName().hasSuffix("40") || root.getName().hasSuffix("60") || root.getName().hasSuffix("70"){
+                        //40->40'tı, 60->60'tı, 70->70'ti
+                        return formation + "t"
+                    } else {
+                        //30->30'du, 50->50'ydi, 80->80'di
+                        return formation + "d"
+                    }
+                default:
+                    return formation + "d"
+            }
+        } else {
+            if TurkishLanguage.isSertSessiz(ch: lastPhoneme(stem: formationToCheck!)) {
+                //yap+DH->yaptı
+                return formation + "t"
+            } else {
+                //sar+DH->sardı
+                return formation + "d"
+            }
+        }
+    }
+    
+    private func resolveA(root: TxtWord, formation: String, rootWord: Bool) -> String{
+        if root.isAbbreviation() {
+            return formation + "e"
+        }
+        if lastVowel(stem: formationToCheck!) >= "0" && lastVowel(stem: formationToCheck!) <= "9" {
+            switch lastVowel(stem: formationToCheck!) {
+                case "6", "9":
+                    //6'ya, 9'a
+                    return formation + "a"
+                case "0":
+                    if root.getName().hasSuffix("10") || root.getName().hasSuffix("30") || root.getName().hasSuffix("40") || root.getName().hasSuffix("60") || root.getName().hasSuffix("90"){
+                        //10'a, 30'a, 40'a, 60'a, 90'a
+                        return formation + "a"
+                    } else {
+                        //20'ye, 50'ye, 80'e, 70'e
+                        return formation + "e"
+                    }
+                default:
+                    //3'e, 8'e, 4'e, 2'ye
+                    return formation + "e"
+            }
+        }
+        if TurkishLanguage.isBackVowel(ch: lastVowel(stem: formationToCheck!)) {
+            if (root.notObeysVowelHarmonyDuringAgglutination() && rootWord) {
+                //alkole, anormale
+                return formation + "e"
+            } else {
+                //sakala, kabala
+                return formation + "a"
+            }
+        }
+        if TurkishLanguage.isFrontVowel(ch: lastVowel(stem: formationToCheck!)) {
+            if root.notObeysVowelHarmonyDuringAgglutination() && rootWord {
+                //faika, halika
+                return formation + "a"
+            } else {
+                //kediye, eve
+                return formation + "e"
+            }
+        }
+        if root.isNumeral() || root.isFraction() || root.isReal() {
+            if root.getName().hasSuffix("6") || root.getName().hasSuffix("9") || root.getName().hasSuffix("10") || root.getName().hasSuffix("30") || root.getName().hasSuffix("40") || root.getName().hasSuffix("60") || root.getName().hasSuffix("90") {
+                return formation + "a"
+            } else {
+                return formation + "e"
+            }
+        }
+        return formation
+    }
+    
+    private func resolveH(root: TxtWord, formation: String, beginningOfSuffix: Bool, specialCaseTenseSuffix: Bool, rootWord: Bool) -> String{
+        if root.isAbbreviation(){
+            return formation + "i"
+        }
+        if beginningOfSuffix && TurkishLanguage.isVowel(ch: lastPhoneme(stem: formationToCheck!)) && !specialCaseTenseSuffix {
+            return formation;
+        }
+        if specialCaseTenseSuffix {
+            //eğer ek Hyor eki ise,
+            if rootWord {
+                if root.vowelAChangesToIDuringYSuffixation() {
+                    if TurkishLanguage.isFrontRoundedVowel(ch: beforeLastVowel(stem: formationToCheck!)) {
+                        //büyülüyor, bölümlüyor, çözümlüyor, döşüyor
+                        return formation.prefix(formation.count - 1) + "ü"
+                    }
+                    if (TurkishLanguage.isFrontUnroundedVowel(ch: beforeLastVowel(stem: formationToCheck!))) {
+                        //adresliyor, alevliyor, ateşliyor, bekliyor
+                        return formation.prefix(formation.count - 1) + "i"
+                    }
+                    if (TurkishLanguage.isBackRoundedVowel(ch: beforeLastVowel(stem: formationToCheck!))) {
+                        //buğuluyor, bulguluyor, çamurluyor, aforozluyor
+                        return formation.prefix(formation.count - 1) + "u"
+                    }
+                    if (TurkishLanguage.isBackUnroundedVowel(ch: beforeLastVowel(stem: formationToCheck!))) {
+                        //açıklıyor, çalkalıyor, gazlıyor, gıcırdıyor
+                        return formation.prefix(formation.count - 1) + "ı"
+                    }
+                }
+            }
+            if TurkishLanguage.isVowel(ch: lastPhoneme(stem: formationToCheck!)) {
+                if TurkishLanguage.isFrontRoundedVowel(ch: beforeLastVowel(stem: formationToCheck!)) {
+                    return formation.prefix(formation.count - 1) + "ü"
+                }
+                if TurkishLanguage.isFrontUnroundedVowel(ch: beforeLastVowel(stem: formationToCheck!)) {
+                    return formation.prefix(formation.count - 1) + "i"
+                }
+                if TurkishLanguage.isBackRoundedVowel(ch: beforeLastVowel(stem: formationToCheck!)) {
+                    return formation.prefix(formation.count - 1) + "u"
+                }
+                if TurkishLanguage.isBackUnroundedVowel(ch: beforeLastVowel(stem: formationToCheck!)) {
+                    return formation.prefix(formation.count - 1) + "ı"
+                }
+            }
+        }
+        if TurkishLanguage.isFrontRoundedVowel(ch: lastVowel(stem: formationToCheck!)) || (TurkishLanguage.isBackRoundedVowel(ch: lastVowel(stem: formationToCheck!)) && root.notObeysVowelHarmonyDuringAgglutination()) {
+            return formation + "ü"
+        }
+        if TurkishLanguage.isFrontUnroundedVowel(ch: lastVowel(stem: formationToCheck!)) || (lastVowel(stem: formationToCheck!) == "a" && root.notObeysVowelHarmonyDuringAgglutination()) {
+            return formation + "i"
+        }
+        if TurkishLanguage.isBackRoundedVowel(ch: lastVowel(stem: formationToCheck!)) {
+            return formation + "u"
+        }
+        if TurkishLanguage.isBackUnroundedVowel(ch: lastVowel(stem: formationToCheck!)) {
+            return formation + "ı"
+        }
+        if root.isNumeral() || root.isFraction() || root.isReal() {
+            if root.getName().hasSuffix("6") || root.getName().hasSuffix("40") || root.getName().hasSuffix("60") || root.getName().hasSuffix("90") {
+                //6'yı, 40'ı, 60'ı
+                return formation + "ı"
+            } else {
+                if root.getName().hasSuffix("3") || root.getName().hasSuffix("4") || root.getName().hasSuffix("00") {
+                    //3'ü, 4'ü, 100'ü
+                    return formation + "ü"
+                } else {
+                    if root.getName().hasSuffix("9") || root.getName().hasSuffix("10") || root.getName().hasSuffix("30") {
+                        //9'u, 10'u, 30'u
+                        return formation + "u"
+                    } else {
+                        //2'yi, 5'i, 8'i
+                        return formation + "i"
+                    }
+                }
+            }
+        }
+        return formation
+    }
+    
+    /**
+     * The resolveC method takes a {@link String} formation as an input. If the last phoneme is on of the "çfhkpsşt", it
+     * concatenates given formation with 'ç', if not it concatenates given formation with 'c'.
+        - Parameters:
+            - formation: {@link String} input.
+        - Returns: resolved String.
+     */
+    private func resolveC(formation: String) -> String{
+        if TurkishLanguage.isSertSessiz(ch: lastPhoneme(stem: formationToCheck!)) {
+            return formation + "ç"
+        } else {
+            return formation + "c"
+        }
+    }
+    
+    /**
+     * The resolveS method takes a {@link String} formation as an input. It then concatenates given formation with 's'.
+        - Parameters:
+            - formation: {@link String} input.
+        - Returns: resolved String.
+     */
+    private func resolveS(formation: String) -> String{
+        return formation + "s"
+    }
+    
+    /**
+     * The resolveSh method takes a {@link String} formation as an input. If the last character is a vowel, it concatenates
+     * given formation with ş, if the last character is not a vowel, and not 't' it directly returns given formation, but if it
+     * is equal to 't', it transforms it to 'd'.
+        - Parameters:
+            - formation: {@link String} input.
+        - Returns: resolved String.
+     */
+    private func resolveSh(formation: String) -> String{
+        if TurkishLanguage.isVowel(ch: Word.charAt(s: formation, i: formation.count - 1)) {
+            return formation + "ş"
+        } else {
+            if Word.charAt(s: formation, i: formation.count - 1) != "t"{
+                return formation;
+            } else {
+                return formation.prefix(formation.count - 1) + "d"
+            }
+        }
+    }
+    
+    public func description() -> String{
+        return _with!
+    }
+    
+    /**
+     * The with method returns the withName variable.
+     *
+        - Returns: the withName variable.
+     */
+    public func with() -> String?{
+        return _withName
+    }
+}
