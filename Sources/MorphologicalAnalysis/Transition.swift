@@ -131,7 +131,7 @@ public class Transition{
             if currentFsmParse.getVerbAgreement() == "A3PL" && _withName == "^DB+VERB+ZERO+PRES+A1SG" {
                 return false
             }
-            if currentFsmParse.getVerbAgreement() == "A3SG" && (currentFsmParse.getPossessiveAgreement() == "P1SG" || currentFsmParse.getPossessiveAgreement() == "P2SG" && _withName == "^DB+VERB+ZERO+PRES+A1PL") {
+            if currentFsmParse.getVerbAgreement() == "A3SG" && (currentFsmParse.getPossessiveAgreement() == "P1SG" || currentFsmParse.getPossessiveAgreement() == "P2SG") && _withName == "^DB+VERB+ZERO+PRES+A1PL" {
                 return false
             }
         }
