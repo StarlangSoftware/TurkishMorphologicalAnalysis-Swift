@@ -12,7 +12,7 @@ let package = Package(
             targets: ["MorphologicalAnalysis"]),
     ],
     dependencies: [
-        .package(name: "Corpus", url: "https://github.com/StarlangSoftware/Corpus-Swift.git", .exact("1.0.8")),
+        .package(name: "Corpus", url: "https://github.com/StarlangSoftware/Corpus-Swift.git", .exact("1.0.9")),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
