@@ -662,6 +662,21 @@ public class FsmParse: MorphologicalParse, NSCopying{
         return result
     }
     
+    /**
+     * Replace root word of the current parse with the new root word and returns the new word.
+     * - Parameters:
+     *     - newRoot: Replaced root word
+       - Returns: Root word of the parse will be replaced with the newRoot and the resulting surface form is returned.
+     */
+    public func replaceRootWord(newRoot: TxtWord) -> String{
+        var result : String = root.getName()
+        for aWith in _withList {
+            let transition = Transition(with: aWith)
+            result = transition.makeTransition(root: newRoot, stem: result)
+        }
+        return result
+    }
+
     public override func description() -> String{
         return transitionList()
     }

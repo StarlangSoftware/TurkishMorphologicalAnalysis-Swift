@@ -812,6 +812,69 @@ public class FsmMorphologicalAnalyzer{
         return parseWord(fsmParse: &initialFsmParse, surfaceForm: surfaceForm)
     }
     
+    public func replaceWord(original: Sentence, previousWord: String, newWord: String) -> Sentence{
+        var i : Int = 0
+        var previousWordSplitted : [String] = []
+        var newWordSplitted : [String] = []
+        let result : Sentence = Sentence()
+        var lastWord, newRootWord : String
+        let previousWordMultiple : Bool = previousWord.contains(" ")
+        let newWordMultiple : Bool = newWord.contains(" ")
+        if previousWordMultiple {
+            previousWordSplitted = previousWord.components(separatedBy: " ")
+            lastWord = previousWordSplitted[previousWordSplitted.count - 1]
+        } else {
+            lastWord = previousWord
+        }
+        if (newWordMultiple){
+            newWordSplitted = newWord.components(separatedBy: " ")
+            newRootWord = newWordSplitted[newWordSplitted.count - 1]
+        } else {
+            newRootWord = newWord
+        }
+        let newRootTxtWord = dictionary.getWord(name: newRootWord)
+        let parseList = morphologicalAnalysis(sentence: original)
+        while i < parseList.count {
+            var replaced = false
+            var replacedWord : String = ""
+            for j in 0..<parseList[i].size() {
+                if parseList[i].getFsmParse(index: j).root.getName() == lastWord && newRootTxtWord != nil {
+                    replaced = true
+                    replacedWord = parseList[i].getFsmParse(index: j).replaceRootWord(newRoot: newRootTxtWord as! TxtWord)
+                }
+            }
+            if replaced {
+                if previousWordMultiple{
+                    for k in 0..<i - previousWordSplitted.count + 1{
+                        result.addWord(word: original.getWord(index: k))
+                    }
+                }
+                if newWordMultiple{
+                    for k in 0..<newWordSplitted.count - 1 {
+                        result.addWord(word: Word(name: newWordSplitted[k]))
+                    }
+                }
+                result.addWord(word: Word(name: replacedWord))
+                if previousWordMultiple{
+                    i = i + 1
+                    break;
+                }
+            } else {
+                if !previousWordMultiple{
+                    result.addWord(word: original.getWord(index: i))
+                }
+            }
+            i = i + 1
+        }
+        if previousWordMultiple{
+            while i < parseList.count {
+                result.addWord(word: original.getWord(index: i))
+                i = i + 1
+            }
+        }
+        return result
+    }
+    
     /**
      * The analysisExists method checks several cases. If the given surfaceForm is a punctuation or double then it
      * returns true. If it is not a root word, then it initializes the parse list and returns the parseExists method with
