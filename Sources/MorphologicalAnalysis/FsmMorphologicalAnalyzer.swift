@@ -241,7 +241,7 @@ public class FsmMorphologicalAnalyzer{
                 }
             }
         }
-        if rootWord && (root.getName() == "ben" || root.lastIdropsDuringSuffixation() || root.lastIdropsDuringPassiveSuffixation()) {
+        if rootWord && (root.getName() == "ben" || root.getName() == "sen" || root.lastIdropsDuringSuffixation() || root.lastIdropsDuringPassiveSuffixation()) {
             return distance <= FsmMorphologicalAnalyzer.MAX_DISTANCE
         } else {
             if shortString.hasSuffix("e") || shortString.hasSuffix("a") || shortString.hasSuffix("p") || shortString.hasSuffix("ç") || shortString.hasSuffix("t") || shortString.hasSuffix("k") || (rootWord && (root.rootSoftenDuringSuffixation() || root.vowelEChangesToIDuringYSuffixation() || root.vowelAChangesToIDuringYSuffixation() || root.endingKChangesIntoG())) {

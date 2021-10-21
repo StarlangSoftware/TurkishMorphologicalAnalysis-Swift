@@ -14,6 +14,7 @@ final class FsmParseTest: XCTestCase {
     var parse7: FsmParse = FsmParse(root: Word(name: ""))
     var parse8: FsmParse = FsmParse(root: Word(name: ""))
     var parse9: FsmParse = FsmParse(root: Word(name: ""))
+    var parse10: FsmParse = FsmParse(root: Word(name: ""))
 
     override func setUp(){
         parse1 = fsm.morphologicalAnalysis(surfaceForm: "açılır").getFsmParse(index: 0)
@@ -25,6 +26,7 @@ final class FsmParseTest: XCTestCase {
         parse7 = fsm.morphologicalAnalysis(surfaceForm: "esaslarını").getFsmParse(index: 0)
         parse8 = fsm.morphologicalAnalysis(surfaceForm: "güçleriyle").getFsmParse(index: 0)
         parse9 = fsm.morphologicalAnalysis(surfaceForm: "bulmayacakları").getFsmParse(index: 0)
+        parse10 = fsm.morphologicalAnalysis(surfaceForm: "mü").getFsmParse(index: 0)
     }
     
     func testGetLastLemmaWithTag() {
@@ -53,6 +55,7 @@ final class FsmParseTest: XCTestCase {
         XCTAssertEqual("esas+ADJ^DB+NOUN+ZERO+A3PL+P2SG+ACC", parse7.description())
         XCTAssertEqual("güç+ADJ^DB+NOUN+ZERO+A3PL+P3PL+INS", parse8.description())
         XCTAssertEqual("bul+VERB+NEG^DB+ADJ+FUTPART+P3PL", parse9.description())
+        XCTAssertEqual("mi+QUES+PRES+A3SG", parse10.description())
     }
 
     func testWithList() {

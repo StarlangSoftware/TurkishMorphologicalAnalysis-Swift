@@ -564,7 +564,7 @@ public class FsmParse: MorphologicalParse, NSCopying{
                                                                                     result = _formList[0] + "+DUP"
                                                                                 } else {
                                                                                     if _suffixList[0].getName() == "QuestionRoot" {
-                                                                                        result = _formList[0] + "+QUES"
+                                                                                        result = "mi+QUES"
                                                                                     } else {
                                                                                         if _suffixList[0].getName() == "PostP" {
                                                                                             if _formList[0] == "karşı" || _formList[0] == "ilişkin" || _formList[0] == "göre" || _formList[0] == "kadar" || _formList[0] == "ait" || _formList[0] == "yönelik" || _formList[0] == "rağmen" || _formList[0] == "değin" || _formList[0] == "dek" || _formList[0] == "doğru" || _formList[0] == "karşın" || _formList[0] == "dair" || _formList[0] == "atfen" || _formList[0] == "binaen" || _formList[0] == "hitaben" || _formList[0] == "istinaden" || _formList[0] == "mahsuben" || _formList[0] == "mukabil" || _formList[0] == "nazaran" {

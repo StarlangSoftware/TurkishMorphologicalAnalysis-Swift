@@ -326,11 +326,14 @@ public class Transition{
             if stem == "ben" {
                 return "bana"
             }
+            if stem == "sen" {
+                return "sana"
+            }
         }
         formationToCheck = stem
         //---vowelEChangesToIDuringYSuffixation---
         //de->d(i)yor, ye->y(i)yor
-        if rootWord && withFirstChar() == "y" && root.vowelEChangesToIDuringYSuffixation() && Word.charAt(s: _with!, i: 1) != "H" {
+        if rootWord && withFirstChar() == "y" && root.vowelEChangesToIDuringYSuffixation() && (Word.charAt(s: _with!, i: 1) != "H" || root.getName() == "ye") {
             formation = stem.prefix(stem.count - 1) + "i"
             formationToCheck = formation
         } else {
@@ -347,7 +350,7 @@ public class Transition{
                     formation = stem + "y"
                     formationToCheck = formation
                 } else {
-                    if rootWord && root.duplicatesDuringSuffixation() && TurkishLanguage.isConsonantDrop(ch: Word.charAt(s: _with!, i: 0)) {
+                    if rootWord && root.duplicatesDuringSuffixation() && !startState.getName().hasPrefix("VerbalRoot") && TurkishLanguage.isConsonantDrop(ch: Word.charAt(s: _with!, i: 0)) {
                         //---duplicatesDuringSuffixation---
                         if softenDuringSuffixation(root: root) {
                             //--extra softenDuringSuffixation

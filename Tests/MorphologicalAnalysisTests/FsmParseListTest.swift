@@ -18,6 +18,7 @@ final class FsmParseListTest: XCTestCase {
     var parse11: FsmParseList = FsmParseList(fsmParses: [])
     var parse12: FsmParseList = FsmParseList(fsmParses: [])
     var parse13: FsmParseList = FsmParseList(fsmParses: [])
+    var parse14: FsmParseList = FsmParseList(fsmParses: [])
 
     override func setUp(){
         parse1 = fsm.morphologicalAnalysis(surfaceForm: "açılır")
@@ -33,6 +34,7 @@ final class FsmParseListTest: XCTestCase {
         parse11 = fsm.morphologicalAnalysis(surfaceForm: "kitapları")
         parse12 = fsm.morphologicalAnalysis(surfaceForm: "o")
         parse13 = fsm.morphologicalAnalysis(surfaceForm: "arabası")
+        parse14 = fsm.morphologicalAnalysis(surfaceForm: "sana")
     }
     
     func testSize() {
@@ -45,6 +47,7 @@ final class FsmParseListTest: XCTestCase {
         XCTAssertEqual(8, parse7.size())
         XCTAssertEqual(6, parse8.size())
         XCTAssertEqual(5, parse9.size())
+        XCTAssertEqual(4, parse14.size())
     }
 
     func testRootWords() {

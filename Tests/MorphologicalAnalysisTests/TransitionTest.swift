@@ -108,6 +108,7 @@ final class TransitionTest: XCTestCase {
     }
 
     func testExceptions() {
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "yiyip").size() != 0)
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "bununla").size() != 0)
         XCTAssertEqual(0, fsm.morphologicalAnalysis(surfaceForm: "buyla").size())
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "onunla").size() != 0)
