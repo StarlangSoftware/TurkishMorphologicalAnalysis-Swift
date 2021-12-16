@@ -25,7 +25,7 @@ public class FsmMorphologicalAnalyzer{
      * turkish_dictionary.txt with fixed cache size 10000000 and by using turkish_finite_state_machine.xml file.
      */
     public convenience init(){
-        self.init(fileName: "turkish_finite_state_machine.xml", dictionary: TxtDictionary(), cacheSize: 10000000)
+        self.init(fileName: "turkish_finite_state_machine", dictionary: TxtDictionary(), cacheSize: 10000000)
     }
     
     /**
@@ -35,7 +35,7 @@ public class FsmMorphologicalAnalyzer{
             - cacheSize: the size of the LRUCache.
      */
     public convenience init(cacheSize: Int){
-        self.init(fileName: "turkish_finite_state_machine.xml", dictionary: TxtDictionary(), cacheSize: cacheSize)
+        self.init(fileName: "turkish_finite_state_machine", dictionary: TxtDictionary(), cacheSize: cacheSize)
     }
     
     /**
@@ -45,7 +45,7 @@ public class FsmMorphologicalAnalyzer{
             - dictionaryFileName: the size of the LRUCache.
      */
     public convenience init(dictionaryFileName: String){
-        self.init(fileName: "turkish_finite_state_machine.xml", dictionary: TxtDictionary(fileName: dictionaryFileName), cacheSize: 10000000)
+        self.init(fileName: "turkish_finite_state_machine", dictionary: TxtDictionary(fileName: dictionaryFileName), cacheSize: 10000000)
     }
     
     /**
@@ -96,7 +96,7 @@ public class FsmMorphologicalAnalyzer{
             - dictionary: the dictionary file that will be used to generate dictionaryTrie.
      */
     public convenience init(dictionary: TxtDictionary){
-        self.init(fileName: "turkish_finite_state_machine.xml", dictionary: dictionary, cacheSize: 10000000)
+        self.init(fileName: "turkish_finite_state_machine", dictionary: dictionary, cacheSize: 10000000)
     }
     
     public func addParsedSurfaceForms(fileName: String){

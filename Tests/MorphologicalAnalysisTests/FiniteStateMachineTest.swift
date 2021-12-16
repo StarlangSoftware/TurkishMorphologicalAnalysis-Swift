@@ -8,7 +8,7 @@ final class FiniteStateMachineTest: XCTestCase {
     var stateList: [State] = []
 
     override func setUp(){
-        fsm = FiniteStateMachine(fileName: "turkish_finite_state_machine.xml")
+        fsm = FiniteStateMachine()
         stateList = fsm.getStates()
     }
 

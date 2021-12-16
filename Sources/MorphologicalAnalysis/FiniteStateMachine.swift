@@ -20,19 +20,25 @@ public class FiniteStateMachine: NSObject, XMLParserDelegate{
     private var first: Bool = true
     
     public override init(){
-        
+        super.init()
+        let url = Bundle.module.url(forResource: "turkish_finite_state_machine", withExtension: "xml")
+        var parser : XMLParser = XMLParser(contentsOf: url!)!
+        parser.delegate = self
+        parser.parse()
+        first = false
+        parser = XMLParser(contentsOf: url!)!
+        parser.delegate = self
+        parser.parse()
     }
     
     public init(fileName: String){
         super.init()
-        let thisSourceFile = URL(fileURLWithPath: #file)
-        let thisDirectory = thisSourceFile.deletingLastPathComponent()
-        let url = thisDirectory.appendingPathComponent(fileName)
-        var parser : XMLParser = XMLParser(contentsOf: url)!
+        let url = Bundle.module.url(forResource: fileName, withExtension: "xml")
+        var parser : XMLParser = XMLParser(contentsOf: url!)!
         parser.delegate = self
         parser.parse()
         first = false
-        parser = XMLParser(contentsOf: url)!
+        parser = XMLParser(contentsOf: url!)!
         parser.delegate = self
         parser.parse()
     }
