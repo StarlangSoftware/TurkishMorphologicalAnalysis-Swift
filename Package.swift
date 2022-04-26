@@ -20,7 +20,7 @@ let package = Package(
         .target(
             name: "MorphologicalAnalysis",
             dependencies: ["Corpus"],
-            resources: [.process("turkish_finite_state_machine.xml")]),
+            resources: [.process("turkish_finite_state_machine.xml"),.process("penntreebank.txt")]),
         .testTarget(
             name: "MorphologicalAnalysisTests",
             dependencies: ["MorphologicalAnalysis"]),
