@@ -19,6 +19,10 @@ final class FsmParseListTest: XCTestCase {
     var parse12: FsmParseList = FsmParseList(fsmParses: [])
     var parse13: FsmParseList = FsmParseList(fsmParses: [])
     var parse14: FsmParseList = FsmParseList(fsmParses: [])
+    var parse15: FsmParseList = FsmParseList(fsmParses: [])
+    var parse16: FsmParseList = FsmParseList(fsmParses: [])
+    var parse17: FsmParseList = FsmParseList(fsmParses: [])
+    var parse18: FsmParseList = FsmParseList(fsmParses: [])
 
     override func setUp(){
         parse1 = fsm.morphologicalAnalysis(surfaceForm: "açılır")
@@ -35,6 +39,10 @@ final class FsmParseListTest: XCTestCase {
         parse12 = fsm.morphologicalAnalysis(surfaceForm: "o")
         parse13 = fsm.morphologicalAnalysis(surfaceForm: "arabası")
         parse14 = fsm.morphologicalAnalysis(surfaceForm: "sana")
+        parse15 = fsm.morphologicalAnalysis(surfaceForm: "açacağını")
+        parse16 = fsm.morphologicalAnalysis(surfaceForm: "kollarımız")
+        parse17 = fsm.morphologicalAnalysis(surfaceForm: "yapmamızı")
+        parse18 = fsm.morphologicalAnalysis(surfaceForm: "koşmalıyız")
     }
     
     func testSize() {
@@ -68,6 +76,10 @@ final class FsmParseListTest: XCTestCase {
         XCTAssertEqual("değerlendirme", parse4.getParseWithLongestRootWord().root.getName())
         XCTAssertEqual("soruşturma", parse5.getParseWithLongestRootWord().root.getName())
         XCTAssertEqual("karşılaştırmalı", parse6.getParseWithLongestRootWord().root.getName())
+        XCTAssertEqual("aç", parse15.getParseWithLongestRootWord().root.getName())
+        XCTAssertEqual("kol", parse16.getParseWithLongestRootWord().root.getName())
+        XCTAssertEqual("yap", parse17.getParseWithLongestRootWord().root.getName())
+        XCTAssertEqual("koş", parse18.getParseWithLongestRootWord().root.getName())
     }
 
     func testReduceToParsesWithSameRootAndPos() {

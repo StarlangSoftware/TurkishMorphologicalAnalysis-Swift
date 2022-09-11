@@ -515,4 +515,13 @@ public enum MorphologicalTag : String, CaseIterable{
         /**
          * Date : 11/06/2018
          */
-        case DATE}
+        case DATE
+        /**
+         * Code : i7-9700K
+         */
+        case CODE
+        /**
+         * Metric : 6cmx7cmx8cm
+         */
+        case METRIC
+}

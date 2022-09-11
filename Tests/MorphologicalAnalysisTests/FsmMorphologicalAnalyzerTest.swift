@@ -6,6 +6,37 @@ final class FsmMorphologicalAnalyzerTest: XCTestCase {
 
     var fsm: FsmMorphologicalAnalyzer = FsmMorphologicalAnalyzer()
 
+    func testGenerateAllParses() {
+        let testWords = ["göç", "açıkla", "yıldönümü",
+                         "resim", "hal", "emlak", "git",
+                         "kavur", "ye", "yemek", "ak",
+                         "sıska", "yıka", "bul", "cevapla",
+                         "coş", "böl", "del", "giy",
+                         "kaydol", "anla", "çök", "çık",
+                         "doldur", "azal", "göster", "aksa", "cenk", "kalp"]
+        for testWord in testWords {
+            let word = self.fsm.getDictionary().getWord(name: testWord) as! TxtWord
+            var parsesExpected : [String] = []
+            let thisSourceFile = URL(fileURLWithPath: #file)
+            let thisDirectory = thisSourceFile.deletingLastPathComponent()
+            let url = thisDirectory.appendingPathComponent("/parses/" + word.getName() + ".txt")
+            do{
+                let fileContent = try String(contentsOf: url, encoding: .utf8)
+                let lines = fileContent.split(whereSeparator: \.isNewline)
+                for line in lines{
+                    let items = line.components(separatedBy: " ")
+                    parsesExpected.append(items[1])
+                }
+            } catch {
+            }
+            let parsesGenerated = self.fsm.generateAllParses(root: word, maxLength: word.getName().count + 5)
+            XCTAssertTrue(parsesExpected.count == parsesGenerated.count)
+            for parseGenerated in parsesGenerated{
+                XCTAssertTrue(parsesExpected.contains(parseGenerated.description()))
+            }
+        }
+    }
+    
     func testMorphologicalAnalysisDataTimeNumber() {
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "3/4").size() != 0)
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "3\\/4").size() != 0)

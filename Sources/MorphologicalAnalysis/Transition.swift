@@ -154,7 +154,7 @@ public class Transition{
         if _with == "kü" {
             return root.takesRelativeSuffixKu()
         }
-        if _with == "dHr" {
+        if _with == "DHr" {
             if _toState!.getName() == "Adverb" {
                 return true
             } else {

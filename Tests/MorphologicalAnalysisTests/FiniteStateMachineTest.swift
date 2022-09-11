@@ -13,7 +13,7 @@ final class FiniteStateMachineTest: XCTestCase {
     }
 
     func testStateCount() {
-        XCTAssertEqual(139, stateList.count)
+        XCTAssertEqual(141, stateList.count)
     }
 
     func testStartEndStates() {
@@ -23,7 +23,7 @@ final class FiniteStateMachineTest: XCTestCase {
                 endStateCount += 1
             }
         }
-        XCTAssertEqual(35, endStateCount)
+        XCTAssertEqual(37, endStateCount)
         let posCounts : CounterHashMap<String> = CounterHashMap<String>()
         for state in stateList {
             if state.getPos() != nil{
