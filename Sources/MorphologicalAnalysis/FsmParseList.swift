@@ -174,6 +174,9 @@ public class FsmParseList{
     public func getParseWithLongestRootWord() -> FsmParse{
         var maxLength: Int = -1
         var bestParse : FsmParse? = nil
+        if !fsmParses.isEmpty{
+            bestParse = fsmParses[0]
+        }
         for currentParse in fsmParses {
             if currentParse.getWord().getName().count > maxLength && !self.isLongestRootException(fsmParse: currentParse){
                 maxLength = currentParse.getWord().getName().count
