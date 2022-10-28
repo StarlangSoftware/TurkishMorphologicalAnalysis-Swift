@@ -13,7 +13,6 @@ public class Transition{
     private var _toState : State?
     private var _with : String?
     private var _withName : String?
-    private var formationToCheck : String?
     private var _toPos : String?
     
     /**
@@ -262,7 +261,7 @@ public class Transition{
                 return "sana"
             }
         }
-        formationToCheck = stem
+        var formationToCheck : String = stem
         //---vowelEChangesToIDuringYSuffixation---
         //de->d(i)yor, ye->y(i)yor
         if rootWord && withFirstChar() == "y" && root.vowelEChangesToIDuringYSuffixation() && (Word.charAt(s: _with!, i: 1) != "H" || root.getName() == "ye") {
@@ -403,20 +402,20 @@ public class Transition{
         while i < _with!.count {
             switch Word.charAt(s: _with!, i: i) {
                 case "D":
-                    formation = MorphotacticEngine.resolveD(root: root, formation: formation, formationToCheck: formationToCheck!)
+                    formation = MorphotacticEngine.resolveD(root: root, formation: formation, formationToCheck: formationToCheck)
                     break;
                 case "A":
-                    formation = MorphotacticEngine.resolveA(root: root, formation: formation, rootWord: rootWord, formationToCheck: formationToCheck!)
+                    formation = MorphotacticEngine.resolveA(root: root, formation: formation, rootWord: rootWord, formationToCheck: formationToCheck)
                     break;
                 case "H":
                     if Word.charAt(s: _with!, i: 0) != "'" {
-                        formation = MorphotacticEngine.resolveH(root: root, formation: formation, beginningOfSuffix: i == 0, specialCaseTenseSuffix: (_with?.hasPrefix("Hyor"))!, rootWord: rootWord, formationToCheck: formationToCheck!)
+                        formation = MorphotacticEngine.resolveH(root: root, formation: formation, beginningOfSuffix: i == 0, specialCaseTenseSuffix: (_with?.hasPrefix("Hyor"))!, rootWord: rootWord, formationToCheck: formationToCheck)
                     } else {
-                        formation = MorphotacticEngine.resolveH(root: root, formation: formation, beginningOfSuffix: i == 1, specialCaseTenseSuffix: false, rootWord: rootWord, formationToCheck: formationToCheck!)
+                        formation = MorphotacticEngine.resolveH(root: root, formation: formation, beginningOfSuffix: i == 1, specialCaseTenseSuffix: false, rootWord: rootWord, formationToCheck: formationToCheck)
                     }
                     break;
                 case "C":
-                    formation = MorphotacticEngine.resolveC(formation: formation, formationToCheck: formationToCheck!)
+                    formation = MorphotacticEngine.resolveC(formation: formation, formationToCheck: formationToCheck)
                     break;
                 case "S":
                     formation = MorphotacticEngine.resolveS(formation: formation)
