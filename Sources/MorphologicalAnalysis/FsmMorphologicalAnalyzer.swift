@@ -29,10 +29,10 @@ public class FsmMorphologicalAnalyzer{
     }
     
     /**
-     * Another constructor of FsmMorphologicalAnalyzer class. It generates a new TxtDictionary type dictionary from
-     * turkish_dictionary.txt with given input cacheSize and by using turkish_finite_state_machine.xml file.
-        - Parameters:
-            - cacheSize: the size of the LRUCache.
+     Another constructor of FsmMorphologicalAnalyzer class. It generates a new TxtDictionary type dictionary from
+     turkish_dictionary.txt with given input cacheSize and by using turkish_finite_state_machine.xml file.
+     - Parameters:
+        - cacheSize: the size of the LRUCache.
      */
     public convenience init(cacheSize: Int){
         self.init(fileName: "turkish_finite_state_machine", dictionary: TxtDictionary(), cacheSize: cacheSize)
@@ -1050,15 +1050,28 @@ public class FsmMorphologicalAnalyzer{
         }
         return (Word.charAt(s: surfaceForm!, i: 0) >= "A" && Word.charAt(s: surfaceForm!, i: 0) <= "Z") || Word.charAt(s: surfaceForm!, i: 0) == "İ" || Word.charAt(s: surfaceForm!, i: 0) == "Ü" || Word.charAt(s: surfaceForm!, i: 0) == "Ğ" || Word.charAt(s: surfaceForm!, i: 0) == "Ş" || Word.charAt(s: surfaceForm!, i: 0) == "Ç" || Word.charAt(s: surfaceForm!, i: 0) == "Ö" // İ, Ü, Ğ, Ş, Ç, Ö
     }
+
+    /**
+     The isCode method takes surfaceForm String as input and checks if it consists of both letters and numbers
+    - parameters:
+        - surfaceForm: String to check for code-like word.
+    - Returns: true if it is a code-like word, return false otherwise.
+     */
+    public func isCode(surfaceForm: String?) -> Bool{
+        if surfaceForm == nil || surfaceForm!.count == 0 {
+            return false
+        }
+        return patternMatches(expr: ".*[0-9].*", value: surfaceForm!) && patternMatches(expr: ".*[a-zA-ZçöğüşıÇÖĞÜŞİ].*", value: surfaceForm!)
+    }
     
     /**
-     * The robustMorphologicalAnalysis is used to analyse surfaceForm String. First it gets the currentParse of the surfaceForm
-     * then, if the size of the currentParse is 0, and given surfaceForm is a proper noun, it adds the surfaceForm
-     * whose state name is ProperRoot to an {@link ArrayList}, of it is not a proper noon, it adds the surfaceForm
-     * whose state name is NominalRoot to the {@link ArrayList}.
-        - Parameters:
-            - surfaceForm: String to analyse.
-        - Returns: FsmParseList type currentParse which holds morphological analysis of the surfaceForm.
+     The robustMorphologicalAnalysis is used to analyse surfaceForm String. First it gets the currentParse of the surfaceForm
+     then, if the size of the currentParse is 0, and given surfaceForm is a proper noun, it adds the surfaceForm
+     whose state name is ProperRoot to an {@link ArrayList}, of it is not a proper noon, it adds the surfaceForm
+     whose state name is NominalRoot to the {@link ArrayList}.
+    - Parameters:
+        - surfaceForm: String to analyse.
+    - Returns: FsmParseList type currentParse which holds morphological analysis of the surfaceForm.
      */
     public func robustMorphologicalAnalysis(surfaceForm: String) -> FsmParseList{
         var fsmParse : [FsmParse]
@@ -1071,11 +1084,14 @@ public class FsmMorphologicalAnalyzer{
             fsmParse = []
             if isProperNoun(surfaceForm: surfaceForm) {
                 fsmParse.append(FsmParse(punctuation: surfaceForm, startState: finiteStateMachine.getState(name: "ProperRoot")!))
-                return FsmParseList(fsmParses: parseWord(fsmParse: &fsmParse, surfaceForm: surfaceForm))
             } else {
-                fsmParse.append(FsmParse(punctuation: surfaceForm, startState: finiteStateMachine.getState(name: "NominalRoot")!))
-                return FsmParseList(fsmParses: parseWord(fsmParse: &fsmParse, surfaceForm: surfaceForm))
+                if isCode(surfaceForm: surfaceForm) {
+                    fsmParse.append(FsmParse(punctuation: surfaceForm, startState: finiteStateMachine.getState(name: "CodeRoot")!))
+                } else {
+                    fsmParse.append(FsmParse(punctuation: surfaceForm, startState: finiteStateMachine.getState(name: "NominalRoot")!))
+                }
             }
+            return FsmParseList(fsmParses: parseWord(fsmParse: &fsmParse, surfaceForm: surfaceForm))
         } else {
             return currentParse
         }
@@ -1132,7 +1148,7 @@ public class FsmMorphologicalAnalyzer{
         - Returns: true if surfaceForm matches with the regex.
      */
     private func isInteger(surfaceForm: String) -> Bool{
-        if !patternMatches(expr: "\\+?\\d+", value: surfaceForm){
+        if !patternMatches(expr: "[+-]?\\d+", value: surfaceForm){
             return false
         }
         let len : Int = surfaceForm.count
@@ -1154,7 +1170,7 @@ public class FsmMorphologicalAnalyzer{
         - Returns: true if surfaceForm matches with the regex.
      */
     private func isDouble(surfaceForm: String) -> Bool{
-        return patternMatches(expr: "\\+?(\\d+)?\\.\\d*", value: surfaceForm)
+        return patternMatches(expr: "[+-]?(\\d+)?\\.\\d*", value: surfaceForm)
     }
     
     /**
