@@ -36,6 +36,15 @@ final class FsmMorphologicalAnalyzerTest: XCTestCase {
             }
         }
     }
+
+    func testMorphologicalAnalysisSpecialProperNoun() {
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Times'ın").size() != 0)
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Times'tır").size() != 0)
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Times'mış").size() != 0)
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Twitter'ın").size() != 0)
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Twitter'dır").size() != 0)
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Twitter'mış").size() != 0)
+    }
     
     func testMorphologicalAnalysisDataTimeNumber() {
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "3/4").size() != 0)

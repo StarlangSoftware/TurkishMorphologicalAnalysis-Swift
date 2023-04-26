@@ -138,13 +138,13 @@ public class MorphotacticEngine{
         if TurkishLanguage.isFrontRoundedVowel(ch: Word.lastVowel(stem: formationToCheck)) || (TurkishLanguage.isBackRoundedVowel(ch: Word.lastVowel(stem: formationToCheck)) && root.notObeysVowelHarmonyDuringAgglutination()) {
             return formation + "ü"
         }
-        if TurkishLanguage.isFrontUnroundedVowel(ch: Word.lastVowel(stem: formationToCheck)) || (Word.lastVowel(stem: formationToCheck) == "a" && root.notObeysVowelHarmonyDuringAgglutination()) {
+        if (TurkishLanguage.isFrontUnroundedVowel(ch: Word.lastVowel(stem: formationToCheck)) && !root.notObeysVowelHarmonyDuringAgglutination()) || ((Word.lastVowel(stem: formationToCheck) == "a" || Word.lastVowel(stem: formationToCheck) == "â") && root.notObeysVowelHarmonyDuringAgglutination()) {
             return formation + "i"
         }
         if TurkishLanguage.isBackRoundedVowel(ch: Word.lastVowel(stem: formationToCheck)) {
             return formation + "u"
         }
-        if TurkishLanguage.isBackUnroundedVowel(ch: Word.lastVowel(stem: formationToCheck)) {
+        if TurkishLanguage.isBackUnroundedVowel(ch: Word.lastVowel(stem: formationToCheck)) || (TurkishLanguage.isFrontUnroundedVowel(ch: Word.lastVowel(stem: formationToCheck)) && root.notObeysVowelHarmonyDuringAgglutination()){
             return formation + "ı"
         }
         if root.isNumeral() || root.isFraction() || root.isReal() {
