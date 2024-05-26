@@ -99,6 +99,9 @@ public class FsmMorphologicalAnalyzer{
         self.init(fileName: "turkish_finite_state_machine", dictionary: dictionary, cacheSize: 10000000)
     }
     
+    /// Reads the file for correct surface forms and their most frequent root forms, in other words, the surface forms
+    /// which have at least one morphological analysis in  Turkish.
+    /// - Parameter fileName: Input file containing analyzable surface forms and their root forms.
     public func addParsedSurfaceForms(fileName: String){
         parsedSurfaceForms = []
         let thisSourceFile = URL(fileURLWithPath: #file)
@@ -778,6 +781,9 @@ public class FsmMorphologicalAnalyzer{
         return parseWord(fsmParse: &initialFsmParse, surfaceForm: surfaceForm)
     }
     
+    /// Given a set of morphological parses, this method returns all surface forms of those parses.
+    /// - Parameter parseList: Morphological parse list.
+    /// - Returns: All distinct surface forms for a given set of morphological parses.
     public func distinctSurfaceFormList(parseList: [FsmParse]) -> Set<String>{
         var items: Set<String> = []
         for parse in parseList {
@@ -818,6 +824,12 @@ public class FsmMorphologicalAnalyzer{
         return parseWord(fsmParse: &initialFsmParse, surfaceForm: surfaceForm)
     }
     
+    /// Replaces previous lemma in the sentence with the new lemma. Both lemma can contain multiple words.
+    /// - Parameters:
+    ///   - original: Original sentence to be replaced with.
+    ///   - previousWord: Root word in the original sentence
+    ///   - newWord: newWord New word to be replaced.
+    /// - Returns: Newly generated sentence by replacing the previous word in the original sentence with the new word.
     public func replaceWord(original: Sentence, previousWord: String, newWord: String) -> Sentence{
         var i : Int = 0
         var previousWordSplitted : [String] = []
@@ -1019,6 +1031,14 @@ public class FsmMorphologicalAnalyzer{
         return parseWord(fsmParse: &initialFsmParse, surfaceForm: surfaceForm)
     }
     
+    /// This method uses cache idea to speed up pattern matching in Fsm. mostUsedPatterns stores the compiled forms of
+    /// the previously used patterns. When Fsm tries to match a string to a pattern, first we check if it exists in
+    /// mostUsedPatterns. If it exists, we directly use the compiled pattern to match the string. Otherwise, new pattern
+    /// is compiled and put in the mostUsedPatterns.
+    /// - Parameters:
+    ///   - expr: Pattern to check
+    ///   - value: String to match the pattern
+    /// - Returns: True if the string matches the pattern, false otherwise.
     private func patternMatches(expr: String, value: String) -> Bool{
         var p : NSRegularExpression? = mostUsedPatterns[expr] as? NSRegularExpression
         if p == nil{
@@ -1203,18 +1223,31 @@ public class FsmMorphologicalAnalyzer{
         return word == "" && count > 1
     }
     
+    /// Checks if a given surface form matches to a percent value. It should be something like %4, %45, %4.3 or %56.786
+    /// - Parameter surfaceForm: Surface form to be checked.
+    /// - Returns: True if the surface form is in percent form
     private func isPercent(surfaceForm: String) -> Bool{
         return patternMatches(expr: "%(\\d\\d|\\d)", value: surfaceForm) || patternMatches(expr: "%(\\d\\d|\\d)\\.\\d+", value: surfaceForm)
     }
     
+    /// Checks if a given surface form matches to a time form. It should be something like 3:34, 12:56 etc.
+    /// - Parameter surfaceForm: Surface form to be checked.
+    /// - Returns: True if the surface form is in time form
     private func isTime(surfaceForm: String) -> Bool{
         return patternMatches(expr: "(\\d\\d|\\d):(\\d\\d|\\d):(\\d\\d|\\d)", value: surfaceForm) || patternMatches(expr: "(\\d\\d|\\d):(\\d\\d|\\d)", value: surfaceForm)
     }
     
+    /// Checks if a given surface form matches to a range form. It should be something like 123-1400 or 12:34-15:78 or
+    /// 3.45-4.67.
+    /// - Parameter surfaceForm: Surface form to be checked.
+    /// - Returns: True if the surface form is in range form
     private func isRange(surfaceForm: String) -> Bool{
         return patternMatches(expr: "\\d+-\\d+", value: surfaceForm) || patternMatches(expr: "(\\d\\d|\\d):(\\d\\d|\\d)-(\\d\\d|\\d):(\\d\\d|\\d)", value: surfaceForm) || patternMatches(expr: "(\\d\\d|\\d)\\.(\\d\\d|\\d)-(\\d\\d|\\d)\\.(\\d\\d|\\d)", value: surfaceForm)
     }
     
+    /// Checks if a given surface form matches to a date form. It should be something like 3/10/2023 or 2.3.2012
+    /// - Parameter surfaceForm: Surface form to be checked.
+    /// - Returns: True if the surface form is in date form
     private func isDate(surfaceForm: String) -> Bool{
         return patternMatches(expr: "(\\d\\d|\\d)/(\\d\\d|\\d)/\\d+", value: surfaceForm) || patternMatches(expr: "(\\d\\d|\\d)\\.(\\d\\d|\\d)\\.\\d+", value: surfaceForm)
     }

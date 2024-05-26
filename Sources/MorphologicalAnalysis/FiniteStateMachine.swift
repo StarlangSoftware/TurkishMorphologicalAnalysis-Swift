@@ -19,6 +19,7 @@ public class FiniteStateMachine: NSObject, XMLParserDelegate{
     private var toState: State? = nil
     private var first: Bool = true
     
+    /// Default constructor for Finite State Machine. It reads turkish_finite_State_machine.xml
     public override init(){
         super.init()
         let url = Bundle.module.url(forResource: "turkish_finite_state_machine", withExtension: "xml")
@@ -31,6 +32,12 @@ public class FiniteStateMachine: NSObject, XMLParserDelegate{
         parser.parse()
     }
     
+    /// Constructor reads the finite state machine in the given input file. DOMParser is used to parse the given file.
+    /// Firstly it gets the document to parse.
+    ///
+    /// At the last step, by starting rootNode's first child, it gets all the transitionNodes and next states called toState,
+    /// then continue with the nextSiblings. Also, if there is no possible toState, it prints this case and the causative states.
+    /// - Parameter fileName: the resource file to read the finite state machine. Only files in resources folder are supported.
     public init(fileName: String){
         super.init()
         let url = Bundle.module.url(forResource: fileName, withExtension: "xml")
@@ -43,6 +50,15 @@ public class FiniteStateMachine: NSObject, XMLParserDelegate{
         parser.parse()
     }
     
+    /// There are three attributes; name, start, and end. If a node is in a startState it is tagged as 'yes', otherwise 'no'.
+    /// Also, if a node is in a startState, additional attribute will be fetched; originalPos that represents its original
+    /// part of speech.
+    /// - Parameters:
+    ///   - parser: Current parser
+    ///   - elementName: Name of the element
+    ///   - namespaceURI: -
+    ///   - qName: -
+    ///   - attributeDict: Attribute list of the element
     public func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String]) {
         var name, originalpos: String
         var start, end: Bool
@@ -99,6 +115,12 @@ public class FiniteStateMachine: NSObject, XMLParserDelegate{
         }
     }
     
+    /// It gets states by the tag name 'state' and puts them into an array called states.
+    /// - Parameters:
+    ///   - parser: Current parser
+    ///   - elementName: Name of the element
+    ///   - namespaceURI: -
+    ///   - qName: -
     public func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?){
         if elementName == "state" && first{
             states.append(state!)
@@ -121,6 +143,10 @@ public class FiniteStateMachine: NSObject, XMLParserDelegate{
         }
     }
     
+    /// -
+    /// - Parameters:
+    ///   - parser: Current parser
+    ///   - string: Text to be processed.
     public func parser(_ parser: XMLParser, foundCharacters string: String){
         if string != "\n"{
             value = value + string

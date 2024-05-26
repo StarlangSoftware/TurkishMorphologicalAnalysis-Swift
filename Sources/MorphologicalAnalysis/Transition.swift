@@ -137,6 +137,11 @@ public class Transition{
         return true
     }
     
+    /// The transitionPossible method takes root and current parse as inputs. It then checks some special cases.
+    /// - Parameters:
+    ///   - root: Current root word
+    ///   - fromState: From which state we arrived to this state.
+    /// - Returns: true if transition is possible false otherwise
     public func transitionPossible(root: TxtWord, fromState: State) -> Bool{
         if root.isAdjective() && ((root.isNominal() && !root.isExceptional()) || root.isPronoun()) && _toState!.getName() == "NominalRoot(ADJ)" && _with == "0" {
             return false
@@ -243,6 +248,22 @@ public class Transition{
         }
     }
     
+    /// The method is main driving method to accomplish the current transition from one state to another depending on
+    /// the root form of the word, current value of the word form, and the type of the start state. The method
+    /// (a) returns the original word form if the transition is an epsilon transition, (b) adds 'nunla' if the current
+    /// stem is 'bu', 'şu' or 'o', (c) returns 'bana' or 'sana' if the current stem is 'ben' or 'sen' respectively.
+    /// For other cases, the method first modifies current stem and then adds the transition using special metamorpheme
+    /// resolving methods. These cases are: (d) Converts 'y' of the first character of the transition to 'i' if the
+    /// current stem is 'ye' or 'de'. (e) Drops the last two characters and adds last character when the transition is
+    /// ('Hl' or 'Hn') and last 'I' drops during passive suffixation. (f) Adds 'y' character when the word ends with 'su'
+    /// and the transition does not start with 'y'. (g) Adds the last character again when the root duplicates during
+    /// suffixation. (h) Drops the last two characters and adds the last character when last 'i' drops during
+    /// suffixation. (i) Replaces the last character with a soft one when the root soften during suffixation.
+    /// - Parameters:
+    ///   - root: Root of the current word form
+    ///   - stem: Current word form
+    ///   - startState: The state from which this Fsm morphological analysis search has started.
+    /// - Returns: The current value of the word form after this transition is completed in the finite state machine.
     public func makeTransition(root: TxtWord, stem: String, startState: State) -> String{
         let rootWord : Bool = root.getName() == stem || (root.getName() + "'") == stem
         var formation : String = stem
