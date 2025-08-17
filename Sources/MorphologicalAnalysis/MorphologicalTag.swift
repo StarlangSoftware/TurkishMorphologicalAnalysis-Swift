@@ -524,4 +524,12 @@ public enum MorphologicalTag : String, CaseIterable{
          * Metric : 6cmx7cmx8cm
          */
         case METRIC
+        /**
+         * Polite: yapınız, gidiniz
+         */
+        case POLITE
+        /**
+         * Urge: Baksana, yapsana
+         */
+        case URGE
 }

@@ -708,23 +708,23 @@ public class FsmMorphologicalAnalyzer{
      */
     private func parseWord(fsmParse: inout [FsmParse], maxLength: Int) -> [FsmParse]{
         var result : [FsmParse] = []
-        var resultSuffixList : [String] = []
+        var resultTransitionList : [String] = []
         var currentFsmParse : FsmParse
         var root : TxtWord
         var currentState: State
         var currentSurfaceForm: String
-        var currentSuffixList: String
+        var currentTransitionList: String
         while fsmParse.count > 0 {
             currentFsmParse = fsmParse.remove(at: 0)
             root = currentFsmParse.getWord() as! TxtWord
             currentState = currentFsmParse.getFinalSuffix()
             currentSurfaceForm = currentFsmParse.getSurfaceForm()
             if currentState.isEndState() && currentSurfaceForm.count <= maxLength {
-                currentSuffixList = currentFsmParse.suffixList()
-                if !resultSuffixList.contains(currentSuffixList) {
+                currentTransitionList = currentSurfaceForm + " " + currentFsmParse.transitionList()
+                if !resultTransitionList.contains(currentTransitionList) {
                     result.append(currentFsmParse)
                     currentFsmParse.constructInflectionalGroups()
-                    resultSuffixList.append(currentSuffixList)
+                    resultTransitionList.append(currentTransitionList)
                 }
             }
             addNewParsesFromCurrentParse(currentFsmParse: currentFsmParse, fsmParse: &fsmParse, maxLength: maxLength, root: root)
@@ -742,23 +742,23 @@ public class FsmMorphologicalAnalyzer{
      */
     private func parseWord(fsmParse: inout [FsmParse], surfaceForm: String) -> [FsmParse] {
         var result : [FsmParse] = []
-        var resultSuffixList : [String] = []
+        var resultTransitionList : [String] = []
         var currentFsmParse : FsmParse
         var root : TxtWord
         var currentState: State
         var currentSurfaceForm: String
-        var currentSuffixList: String
+        var currentTransitionList: String
         while fsmParse.count > 0 {
             currentFsmParse = fsmParse.remove(at: 0)
             root = currentFsmParse.getWord() as! TxtWord
             currentState = currentFsmParse.getFinalSuffix()
             currentSurfaceForm = currentFsmParse.getSurfaceForm()
             if currentState.isEndState() && currentSurfaceForm == surfaceForm {
-                currentSuffixList = currentFsmParse.suffixList()
-                if !resultSuffixList.contains(currentSuffixList) {
+                currentTransitionList = currentFsmParse.transitionList()
+                if !resultTransitionList.contains(currentTransitionList) {
                     result.append(currentFsmParse)
                     currentFsmParse.constructInflectionalGroups()
-                    resultSuffixList.append(currentSuffixList)
+                    resultTransitionList.append(currentTransitionList)
                 }
             }
             addNewParsesFromCurrentParse(currentFsmParse: currentFsmParse, fsmParse: &fsmParse, surfaceForm: surfaceForm, root: root)

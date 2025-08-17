@@ -51,7 +51,7 @@ final class FiniteStateMachineTest: XCTestCase {
         for state in stateList {
             transitionCount += fsm.getTransitions(state: state).count
         }
-        XCTAssertEqual(779, transitionCount)
+        XCTAssertEqual(783, transitionCount)
     }
     
     func testTransitionWith() {
