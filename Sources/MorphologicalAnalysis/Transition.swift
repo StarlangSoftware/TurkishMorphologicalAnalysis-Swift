@@ -221,11 +221,11 @@ public class Transition{
             - root {@link TxtWord} input.
         - Returns: true if there is softening during suffixation of the given root, false otherwise.
      */
-    public func softenDuringSuffixation(root: TxtWord) -> Bool{
-        if (root.isNominal() || root.isAdjective()) && root.nounSoftenDuringSuffixation() && (_with == "Hm" || _with == "nDAn" || _with == "ncA" || _with == "nDA" || _with == "yA" || _with == "yHm" || _with == "yHz" || _with == "yH" || _with == "nH" || _with == "nA" || _with == "nHn" || _with == "H" || _with == "sH" || _with == "Hn" || _with == "HnHz" || _with == "HmHz") {
+    public func softenDuringSuffixation(root: TxtWord, startState: State) -> Bool{
+        if !startState.getName().hasPrefix("VerbalRoot") && (root.isNominal() || root.isAdjective()) && root.nounSoftenDuringSuffixation() && (_with == "Hm" || _with == "nDAn" || _with == "ncA" || _with == "nDA" || _with == "yA" || _with == "yHm" || _with == "yHz" || _with == "yH" || _with == "nH" || _with == "nA" || _with == "nHn" || _with == "H" || _with == "sH" || _with == "Hn" || _with == "HnHz" || _with == "HmHz") {
             return true
         }
-        if root.isVerb() && root.verbSoftenDuringSuffixation() && (_with!.hasPrefix("Hyor") || _with == "yHs" || _with == "yAn" || _with == "yA" || _with!.hasPrefix("yAcAk") || _with == "yAsH" || _with == "yHncA" || _with == "yHp" || _with == "yAlH" || _with == "yArAk" || _with == "yAdur" || _with == "yHver" || _with == "yAgel" || _with == "yAgor" || _with == "yAbil" || _with == "yAyaz" || _with == "yAkal" || _with == "yAkoy" || _with == "yAmA" || _with == "yHcH" || _with == "HCH" || _with!.hasPrefix("Hr") || _with == "Hs" || _with == "Hn" || _with == "yHn" || _with == "yHnHz" || _with!.hasPrefix("Ar") || _with == "Hl") {
+        if startState.getName().hasPrefix("VerbalRoot") && root.isVerb() && root.verbSoftenDuringSuffixation() && (_with!.hasPrefix("Hyor") || _with == "yHs" || _with == "yAn" || _with == "yA" || _with!.hasPrefix("yAcAk") || _with == "yAsH" || _with == "yHncA" || _with == "yHp" || _with == "yAlH" || _with == "yArAk" || _with == "yAdur" || _with == "yHver" || _with == "yAgel" || _with == "yAgor" || _with == "yAbil" || _with == "yAyaz" || _with == "yAkal" || _with == "yAkoy" || _with == "yAmA" || _with == "yHcH" || _with == "HCH" || _with!.hasPrefix("Hr") || _with == "Hs" || _with == "Hn" || _with == "yHn" || _with == "yHnHz" || _with!.hasPrefix("Ar") || _with == "Hl") {
             return true
         }
         return false
@@ -304,7 +304,7 @@ public class Transition{
                 } else {
                     if rootWord && root.duplicatesDuringSuffixation() && !startState.getName().hasPrefix("VerbalRoot") && TurkishLanguage.isConsonantDrop(ch: Word.charAt(s: _with!, i: 0)) {
                         //---duplicatesDuringSuffixation---
-                        if softenDuringSuffixation(root: root) {
+                        if softenDuringSuffixation(root: root, startState: startState) {
                             //--extra softenDuringSuffixation
                             switch (Word.lastPhoneme(stem: stem)) {
                                 case "p":
@@ -327,7 +327,7 @@ public class Transition{
                     } else {
                         if rootWord && root.lastIdropsDuringSuffixation() && !startState.getName().hasPrefix("VerbalRoot") && !startState.getName().hasPrefix("ProperRoot") && startWithVowelorConsonantDrops() {
                             //---lastIdropsDuringSuffixation---
-                            if softenDuringSuffixation(root: root) {
+                            if softenDuringSuffixation(root: root, startState: startState) {
                                 //---softenDuringSuffixation---
                                 switch (Word.lastPhoneme(stem: stem)) {
                                     case "p":
@@ -356,26 +356,26 @@ public class Transition{
                                 //---nounSoftenDuringSuffixation or verbSoftenDuringSuffixation
                                 case "p":
                                     //adap->adabı, amip->amibi, azap->azabı, gazap->gazabı
-                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root, startState: startState) {
                                         formation = stem.prefix(stem.count - 1) + "b"
                                     }
                                     break;
                                 case "t":
                                     //adet->adedi, akort->akordu, armut->armudu
                                     //affet->affedi, yoket->yokedi, sabret->sabredi, rakset->raksedi
-                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root, startState: startState) {
                                         formation = stem.prefix(stem.count - 1) + "d"
                                     }
                                     break;
                                 case "ç":
                                     //ağaç->ağacı, almaç->almacı, akaç->akacı, avuç->avucu
-                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root, startState: startState) {
                                         formation = stem.prefix(stem.count - 1) + "c"
                                     }
                                     break;
                                 case "g":
                                     //arkeolog->arkeoloğu, filolog->filoloğu, minerolog->mineroloğu
-                                    if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root) {
+                                if startWithVowelorConsonantDrops() && rootWord && softenDuringSuffixation(root: root, startState: startState) {
                                         formation = stem.prefix(stem.count - 1) + "ğ"
                                     }
                                     break;
@@ -385,7 +385,7 @@ public class Transition{
                                         formation = stem.prefix(stem.count - 1) + "g"
                                     } else {
                                         //ablak->ablağı, küllük->küllüğü, kitaplık->kitaplığı, evcilik->evciliği
-                                        if startWithVowelorConsonantDrops() && (!rootWord || (softenDuringSuffixation(root: root) && (!root.isProperNoun() || startState.description() != "ProperRoot"))) {
+                                        if startWithVowelorConsonantDrops() && (!rootWord || (softenDuringSuffixation(root: root, startState: startState) && (!root.isProperNoun() || startState.description() != "ProperRoot"))) {
                                             formation = stem.prefix(stem.count - 1) + "ğ"
                                         }
                                     }

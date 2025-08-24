@@ -38,6 +38,7 @@ final class FsmMorphologicalAnalyzerTest: XCTestCase {
     }
 
     func testMorphologicalAnalysisSpecialProperNoun() {
+        XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "uça").size() != 0)
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Times'ın").size() != 0)
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Times'tır").size() != 0)
         XCTAssertTrue(fsm.morphologicalAnalysis(surfaceForm: "Times'mış").size() != 0)
