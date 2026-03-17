@@ -30,7 +30,7 @@ Video Lectures
 
 For Developers
 ============
-You can also see [Java](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis), [Python](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-Py), [Cython](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-Cy), [C](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-C), [C#](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-CS), or [C++](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-CPP) repository.
+You can also see [Java](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis), [Python](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-Py), [Cython](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-Cy), [C](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-C), [C#](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-CS), [Php](https://github.com/starlangsoftware/TurkishMorphologicalAnalysis-Php), [Js](https://github.com/starlangsoftware/TurkishMorphologicalAnalysis-Js), or [C++](https://github.com/starlangsoftware/TurkishMorpologicalAnalysis-CPP) repository.
 
 ## Requirements
 
