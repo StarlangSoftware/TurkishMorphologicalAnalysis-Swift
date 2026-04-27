@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/StarlangSoftware/Corpus-Swift.git",
         "state": {
           "branch": null,
-          "revision": "0d885ec0c75f1cc6d26713ee02971ee5923b8433",
-          "version": "1.0.19"
+          "revision": "a1c9fbf7393041a8522e4983b9876e1fb6543317",
+          "version": "1.0.20"
         }
       },
       {
@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/StarlangSoftware/Dictionary-Swift.git",
         "state": {
           "branch": null,
-          "revision": "d2f8617d56881642696e0ea176dc5c9ff35b1978",
-          "version": "1.0.14"
+          "revision": "bc3025d44d0d83ca0fd08907fb08886ec3bffbbd",
+          "version": "1.0.15"
         }
       },
       {

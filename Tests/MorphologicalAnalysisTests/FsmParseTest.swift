@@ -20,7 +20,7 @@ final class FsmParseTest: XCTestCase {
         parse1 = fsm.morphologicalAnalysis(surfaceForm: "açılır").getFsmParse(index: 0)
         parse2 = fsm.morphologicalAnalysis(surfaceForm: "koparılarak").getFsmParse(index: 0)
         parse3 = fsm.morphologicalAnalysis(surfaceForm: "toplama").getFsmParse(index: 0)
-        parse4 = fsm.morphologicalAnalysis(surfaceForm: "değerlendirmede").getFsmParse(index: 0)
+        parse4 = fsm.morphologicalAnalysis(surfaceForm: "değerlendirmede").getFsmParse(index: 1)
         parse5 = fsm.morphologicalAnalysis(surfaceForm: "soruşturmasının").getFsmParse(index: 0)
         parse6 = fsm.morphologicalAnalysis(surfaceForm: "karşılaştırmalı").getFsmParse(index: 0)
         parse7 = fsm.morphologicalAnalysis(surfaceForm: "esaslarını").getFsmParse(index: 0)

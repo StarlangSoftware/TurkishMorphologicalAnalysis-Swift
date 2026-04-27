@@ -49,7 +49,7 @@ final class FsmParseListTest: XCTestCase {
         XCTAssertEqual(2, parse1.size())
         XCTAssertEqual(2, parse2.size())
         XCTAssertEqual(6, parse3.size())
-        XCTAssertEqual(4, parse4.size())
+        XCTAssertEqual(5, parse4.size())
         XCTAssertEqual(5, parse5.size())
         XCTAssertEqual(12, parse6.size())
         XCTAssertEqual(8, parse7.size())
@@ -108,7 +108,7 @@ final class FsmParseListTest: XCTestCase {
         XCTAssertEqual(1, parse1.constructParseListForDifferentRootWithPos().count)
         XCTAssertEqual(2, parse2.constructParseListForDifferentRootWithPos().count)
         XCTAssertEqual(5, parse3.constructParseListForDifferentRootWithPos().count)
-        XCTAssertEqual(4, parse4.constructParseListForDifferentRootWithPos().count)
+        XCTAssertEqual(5, parse4.constructParseListForDifferentRootWithPos().count)
         XCTAssertEqual(5, parse5.constructParseListForDifferentRootWithPos().count)
         XCTAssertEqual(7, parse6.constructParseListForDifferentRootWithPos().count)
         XCTAssertEqual(2, parse7.constructParseListForDifferentRootWithPos().count)
@@ -119,7 +119,7 @@ final class FsmParseListTest: XCTestCase {
     func testParsesWithoutPrefixAndSuffix() {
         XCTAssertEqual("P3SG+NOM$PNON+ACC", parse10.parsesWithoutPrefixAndSuffix())
         XCTAssertEqual("A3PL+P3PL+NOM$A3PL+P3SG+NOM$A3PL+PNON+ACC$A3SG+P3PL+NOM", parse11.parsesWithoutPrefixAndSuffix())
-        XCTAssertEqual("DET$PRON+DEMONSP+A3SG+PNON+NOM$PRON+PERS+A3SG+PNON+NOM", parse12.parsesWithoutPrefixAndSuffix())
+        XCTAssertEqual("ADJ$DET$PRON+DEMONSP+A3SG+PNON+NOM$PRON+PERS+A3SG+PNON+NOM", parse12.parsesWithoutPrefixAndSuffix())
         XCTAssertEqual("NOUN+A3SG+P3SG+NOM$NOUN^DB+ADJ+ALMOST", parse13.parsesWithoutPrefixAndSuffix())
     }
 
